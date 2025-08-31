@@ -1,21 +1,22 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+  import { ref, type Ref } from 'vue';
   import type { Character } from './types/Character';
   import { attack, healing, restartGame } from './utils/game-actions';
+  import { initGame } from './utils/game-logic';
 
-  
-  const yourCharacter = ref<Character>({
-    life: 100,
-    turn: true,
-    limit_cures: 5,
-  });
-
-  const enemyCharacter = ref<Character>({
+  const yourCharacter: Ref<Character> = ref({
     life: 100,
     turn: false,
     limit_cures: 5,
   });
 
+  const enemyCharacter: Ref<Character> = ref({
+    life: 100,
+    turn: false,
+    limit_cures: 5,
+  });
+
+  initGame(yourCharacter, enemyCharacter); //select a player at random attack first
   // Funciones wrapper para usar en el template
   const performAttack = (player: number, probability: number, damage: number) => {
     attack(player, probability, damage, yourCharacter, enemyCharacter);
@@ -25,7 +26,7 @@
     healing(player, character, yourCharacter, enemyCharacter);
   };
 
-  const performRestart = (you: Character, enemy: Character) => {
+  const performRestart = () => {
     restartGame(yourCharacter, enemyCharacter);
   }
 
@@ -34,14 +35,12 @@
 <template>
   <header class="bg-blue-900">
     <h1 class="text-3xl p-4 text-center text-white">RPG</h1>
-    <button 
-            @click="performRestart(yourCharacter, enemyCharacter)"
-            class="text-3xl text-white">restart</button>
   </header>
 
   <main class="p-10 flex justify-center items-start gap-10">
-    <!-- Player 1 -->
-    <section class="w-80 bg-white rounded-xl shadow-lg border-2 border-black p-4 flex flex-col items-center">
+    <section 
+            class="w-80 bg-white rounded-xl border-2 border-black p-4 flex flex-col items-center"
+            :style="{boxShadow: (yourCharacter.turn && yourCharacter.life > 0)? '0px 0px 20px 5px rgba(40,0,255,0.81)' : ''}">
       <h1 class="text-lg font-bold mb-2">Player 1</h1>
       <!-- barra de vida -->
       <div class="w-full bg-gray-300 rounded-md overflow-hidden h-6 mb-2">
@@ -49,7 +48,7 @@
             class="bg-green-500 h-full text-center text-white font-bold transition-all duration-300"
             :style="{ width: yourCharacter.life + '%' }"
           >
-            {{ yourCharacter.life }}
+            {{ yourCharacter.life <= 0? '0' : yourCharacter.life }}
           </div>
       </div>
       <div class="flex flex-col w-full gap-2">
@@ -67,13 +66,24 @@
         >Sanity {{ yourCharacter.limit_cures }} / 5</button>
       </div>
     </section>
+
     <section>
       <div>
+        <h1 
+            v-if="yourCharacter.life <= 0 || enemyCharacter.life <= 0">
+          {{ yourCharacter.life <= 0 ? 'player 2 wins':'player 1 wins'}}
+        </h1>
         <h1>{{ yourCharacter.turn ? 'turno del jugador 1' : 'turno del jugador 2'}}</h1>
+        <img src="./assets/vs.png" alt="versus image"/>
+        <button 
+            @click="performRestart()"
+            class="text-3xl">restart</button>
       </div>
     </section>
-    <!-- Player 2 -->
-    <section class="w-80 bg-white rounded-xl shadow-lg border-2 border-black p-4 flex flex-col items-center">
+
+    <section 
+              class="w-80 bg-white rounded-xl border-2 border-black p-4 flex flex-col items-center"
+              :style="{boxShadow: (enemyCharacter.turn && enemyCharacter.life > 0)? '0px 0px 20px 5px rgba(135,0,255,0.8)' : ''}">  
       <h1 class="text-lg font-bold mb-2">Player 2</h1>
       <!-- barra de vida enemigo-->
       <div class="w-full bg-gray-300 rounded-md overflow-hidden h-6 mb-2">
@@ -81,7 +91,7 @@
             class="bg-indigo-700 h-full text-center text-white font-bold transition-all duration-300"
             :style="{ width: enemyCharacter.life + '%' }"
           >
-            {{ enemyCharacter.life }}
+            {{ enemyCharacter.life <= 0? '0' : enemyCharacter.life}}
           </div>
       </div>
       <div class="flex flex-col w-full gap-2">

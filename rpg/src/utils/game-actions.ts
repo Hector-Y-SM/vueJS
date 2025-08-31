@@ -1,5 +1,5 @@
 import type { Character } from '../types/Character.ts';
-import { validateTurn, validateCures, limitLife } from './game-logic.ts';
+import { validateTurn, validateCures, limitLife, initGame, statusGame } from './game-logic.ts';
 import type { Ref } from 'vue';
   
   /**
@@ -14,6 +14,10 @@ export const attack = (
     damage: number,   
     yourCharacter: Ref<Character>, 
     enemyCharacter: Ref<Character>) => {
+        if(!statusGame(yourCharacter, enemyCharacter)){
+          return;
+        }
+
         if (!validateTurn(player, yourCharacter.value, enemyCharacter.value)) {
           return;
         }
@@ -37,6 +41,10 @@ export const healing = (
     character: Character, 
     yourCharacter: Ref<Character>, 
     enemyCharacter: Ref<Character>) => {
+        if (!statusGame(yourCharacter, enemyCharacter)){
+          return;
+        }
+
         if (!validateTurn(player, yourCharacter.value, enemyCharacter.value)) {
           return;
         }
@@ -82,8 +90,10 @@ export const restartGame = (
   enemyCharacter: Ref<Character>) => {
     yourCharacter.value.life = 100;
     yourCharacter.value.limit_cures = 5;
-    yourCharacter.value.turn = true;
+    yourCharacter.value.turn = false;
     enemyCharacter.value.life = 100;
     enemyCharacter.value.limit_cures = 5;
     enemyCharacter.value.turn= false;
+
+    initGame(yourCharacter, enemyCharacter);
 }
