@@ -1,22 +1,17 @@
 <script setup lang="ts">
   import { ref, type Ref } from 'vue';
   import type { Character } from './types/Character';
+  import { defaultCharacter } from './types/Character';
   import { attack, healing, restartGame } from './utils/game-actions';
   import { initGame } from './utils/game-logic';
 
   const information = ref<String>('');
-  const yourCharacter = ref({
-    life: 100,
-    turn: false,
-    limit_cures: 6,
-    limit_special_attack: 4
+  const yourCharacter = ref<Character>({
+    ...defaultCharacter
   });
 
-  const enemyCharacter = ref({
-    life: 100,
-    turn: false,
-    limit_cures: 6,
-    limit_special_attack: 4
+  const enemyCharacter = ref<Character>({
+    ...defaultCharacter
   });
 
   initGame(yourCharacter, enemyCharacter); //select a player at random attack first
@@ -41,12 +36,12 @@
     <h1 class="text-3xl p-4 text-center text-white">RPG</h1>
   </header>
 
-  <main class="p-10 grid grid-cols-3 gap-10 items-start justify-center text-center">
+  <main class="p-4 sm:p-6 md:p-10 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-10 items-start justify-center text-center">
     <section
-      class="w-80 bg-white rounded-xl border-2 border-black p-4 flex flex-col items-center mx-auto"
+      class="w-full max-w-xs bg-white rounded-xl border-2 border-black p-4 flex flex-col items-center mx-auto"
       :style="{ 
         boxShadow: (yourCharacter.turn && yourCharacter.life > 0) 
-          ? '0px 0px 20px 5px rgba(40,0,255,0.81)' 
+          ? '0px 0px 20px 5px rgba(32,102,240,0.8)' 
           : '' 
       }"
     >
@@ -70,13 +65,13 @@
         <button 
           @click="performAttack(0, 3, 20)"
           class="bg-blue-500 py-2 rounded-lg text-white"
-        >Special Attack {{ yourCharacter.limit_special_attack }} / 4</button>
+        >Special Attack {{ yourCharacter.limit_special_attack }} / 5</button>
 
         <button 
           @click="performHealing(0, yourCharacter)"
           class="bg-green-200 py-2 rounded-lg"
         >
-          Sanity {{ yourCharacter.limit_cures }} / 6
+          Sanity {{ yourCharacter.limit_cures }} / 7
         </button>
       </div>
     </section>
@@ -90,22 +85,21 @@
       <h2 class="text-lg text-gray-700 font-semibold uppercase">{{ information }}</h2>
       <h2 v-if="yourCharacter.life > 0 && enemyCharacter.life > 0"
         class="text-lg uppercase">
-        {{ yourCharacter.turn ? 'Turno del Jugador 1' : 'Turno del Jugador 2' }}
+        {{ yourCharacter.turn ? 'Player 1 turn' : 'Player 2 turn' }}
       </h2>
 
-      <img src="./assets/vs.png" alt="versus image" class="w-32 my-4" />
+      <img src="./assets/vs.png" alt="versus image" class="w-24 sm:w-32 my-4" />
 
       <button 
         @click="performRestart()"
-        class="text-2xl text-gray-700 font-semibold uppercase"
+        class="text-xl sm:text-2xl text-gray-700 font-semibold uppercase"
       >
         Restart 🗘
       </button>
     </section>
 
-
     <section
-      class="w-80 bg-white rounded-xl border-2 border-black p-4 flex flex-col items-center mx-auto"
+      class="w-full max-w-xs bg-white rounded-xl border-2 border-black p-4 flex flex-col items-center mx-auto"
       :style="{ 
         boxShadow: (enemyCharacter.turn && enemyCharacter.life > 0) 
           ? '0px 0px 20px 5px rgba(135,0,255,0.8)' 
@@ -132,13 +126,13 @@
         <button 
           @click="performAttack(1, 3, 20)"
           class="bg-blue-500 py-2 rounded-lg text-white"
-        >Special Attack {{ enemyCharacter.limit_special_attack }} / 4</button>
+        >Special Attack {{ enemyCharacter.limit_special_attack }} / 5</button>
 
         <button 
           @click="performHealing(1, enemyCharacter)"
           class="bg-green-200 py-2 rounded-lg"
         >
-          Sanity {{ enemyCharacter.limit_cures }} / 6
+          Sanity {{ enemyCharacter.limit_cures }} / 7
         </button>
       </div>
     </section>

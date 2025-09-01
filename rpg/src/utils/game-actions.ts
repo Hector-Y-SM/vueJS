@@ -1,4 +1,4 @@
-import type { Character } from '../types/Character.ts';
+import { defaultCharacter, type Character } from '../types/Character.ts';
 import { validateTurn, validateCures, limitLife, initGame, statusGame, limitSpecialAttack } from './game-logic.ts';
 import type { Ref } from 'vue';
   
@@ -11,7 +11,6 @@ import type { Ref } from 'vue';
  * @param enemyCharacter - Reference to player 2's character
  * @returns Message indicating the result of the attack or an empty string if invalid
  */
-
 export const attack = ( 
     player: number, 
     probability: number, 
@@ -28,11 +27,11 @@ export const attack = (
 
         if (!player && damage == 20) {
           if(!limitSpecialAttack(yourCharacter.value)){
-            return `te quedaste sin ataques especiales juagador 1`
+            return `You have no special attacks left, player 1`
           }
         } else if (player && damage == 20){
           if(!limitSpecialAttack(enemyCharacter.value)){
-            return `te quedaste sin ataques especiales juagador 2`
+            return `You have no special attacks left, player 2`
           }
         }
 
@@ -41,12 +40,12 @@ export const attack = (
             enemyCharacter.value.life -= damage;
             damage == 20? yourCharacter.value.limit_special_attack -=1 : null;
             endTurn(player, yourCharacter, enemyCharacter)
-            return `jugador 1 acerto su ataque ${damage == 10? 'basico': 'especial'}`
+            return `Player 1 landed their ${damage == 10? 'basic': 'special'} attack`
           } else {
             yourCharacter.value.life -= damage;
             damage == 20? enemyCharacter.value.limit_special_attack -=1 : null;
             endTurn(player, yourCharacter, enemyCharacter);
-            return `jugador 2 acerto su ataque ${damage == 10? 'basico': 'especial'}`
+            return `Player 2 landed their ${damage == 10? 'basic': 'special'} attack`
           }
         } else {
           endTurn(player, yourCharacter, enemyCharacter);
@@ -56,7 +55,7 @@ export const attack = (
                       :
                       enemyCharacter.value.limit_special_attack -=1
           : null;  
-          return `jugador ${!player ? '1' : '2'} fallo su ataque ${damage == 10? 'basico': 'especial'}`
+          return `Player ${!player ? '1' : '2'} landed their ${damage == 10? 'basic': 'special'} attack`
         }
 }; 
 /**
@@ -67,7 +66,6 @@ export const attack = (
  * @param enemyCharacter - Reference to player 2's character
  * @returns Message indicating the result of the healing or an error message
  */
-
 export const healing = (
     player: number, 
     character: Character, 
@@ -82,23 +80,23 @@ export const healing = (
         }
 
         if (!validateCures(character)){
-          return `te quedaste sin curaciones jugador ${!player ? '1' : '2'}, haz otro movimiento`;
+          return `you ran out of healing items ${!player ? '1' : '2'}, make another move`;
         }
 
         if (limitLife(character)){
-          return `tienes la salud al maximo jugador ${!player ? '1' : '2'}, haz otro movimiento`;
+          return `You have maximum health, player. ${!player ? '1' : '2'}, make another move`;
         }
 
         if (!player){
           yourCharacter.value.life += 10;
           yourCharacter.value.limit_cures--;
           endTurn(player, yourCharacter, enemyCharacter);
-          return `jugador 1 recupero 10 puntos de vida`;
+          return `Player 1 regained 10 health points.`;
         } else {
           enemyCharacter.value.life += 10;      
           enemyCharacter.value.limit_cures--;
           endTurn(player, yourCharacter, enemyCharacter);
-          return `jugador 2 recupero 10 puntos de vida`;
+          return `Player 2 regained 10 health points.`;
         }
 };
 
@@ -108,7 +106,6 @@ export const healing = (
  * @param yourCharacter - Reference to player 1's character
  * @param enemyCharacter - Reference to player 2's character
  */
-
 export const endTurn = (
     player: number, 
     yourCharacter: Ref<Character>, 
@@ -127,18 +124,11 @@ export const endTurn = (
  * @param yourCharacter - Reference to player 1's character
  * @param enemyCharacter - Reference to player 2's character
  */
-
 export const restartGame = (    
   yourCharacter: Ref<Character>, 
   enemyCharacter: Ref<Character>) => {
-    yourCharacter.value.life = 100;
-    yourCharacter.value.limit_cures = 6;
-    yourCharacter.value.turn = false;
-    yourCharacter.value.limit_special_attack = 4;
-    enemyCharacter.value.life = 100;
-    enemyCharacter.value.limit_cures = 6;
-    enemyCharacter.value.turn= false;
-    yourCharacter.value.limit_special_attack = 4;
+    Object.assign(yourCharacter.value, defaultCharacter);
+    Object.assign(enemyCharacter.value, defaultCharacter);
 
     initGame(yourCharacter, enemyCharacter);
 }
