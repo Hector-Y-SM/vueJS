@@ -1,33 +1,44 @@
-# rpg
+# Vue RPG Battle Game
 
-This template should help get you started developing with Vue 3 in Vite.
+A simple 2-player turn-based RPG battle game built with Vue 3 and TypeScript.
 
-## Recommended IDE Setup
+## Game Description
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+This is a turn-based RPG battle game where two players face off against each other. Each player has:
 
-## Type Support for `.vue` Imports in TS
+- 100 health points
+- 7 healing potions
+- 5 special attacks 
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+### Game Features
 
-## Customize configuration
+- **Turn System**: Players alternate turns to perform actions
+- **Combat Actions**:
+  - Basic Attack (10 damage, higher hit probability)
+  - Special Attack (20 damage, lower hit probability, limited to 5 uses)
+  - Heal (Recovers 10 HP, limited to 7 uses)
+- **Battle Mechanics**: 
+  - Random hit probability for attacks
+  - Turn management system
+  - Health tracking
+  - Resource management (healing potions and special attacks)
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+## Technical Stack
+
+- Vue 3
+- TypeScript
+- Tailwind CSS
+- Vite
 
 ## Project Setup
 
 ```sh
+# Install dependencies
 npm install
-```
 
-### Compile and Hot-Reload for Development
-
-```sh
+# Start development server
 npm run dev
-```
 
-### Type-Check, Compile and Minify for Production
-
-```sh
+# Build for production
 npm run build
 ```

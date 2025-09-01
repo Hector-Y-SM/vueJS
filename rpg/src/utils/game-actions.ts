@@ -55,7 +55,7 @@ export const attack = (
                       :
                       enemyCharacter.value.limit_special_attack -=1
           : null;  
-          return `Player ${!player ? '1' : '2'} landed their ${damage == 10? 'basic': 'special'} attack`
+          return `Player ${!player ? '1' : '2'} missed her ${damage == 10? 'basic': 'special'} attack`
         }
 }; 
 /**
