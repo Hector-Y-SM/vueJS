@@ -1,13 +1,17 @@
 import type { Character } from '../types/Character.ts';
-import { validateTurn, validateCures, limitLife, initGame, statusGame } from './game-logic.ts';
+import { validateTurn, validateCures, limitLife, initGame, statusGame, limitSpecialAttack } from './game-logic.ts';
 import type { Ref } from 'vue';
   
-  /**
-   * Reusable function for basic and special attacks by player 1 and CPU/player 2
-   * @param player player who will make the atatck
-   * @param probability possibility of causing harm to the other player
-   * @param damage amount of damage done by the basic or special attack
-   */
+/**
+ * Executes an attack from one player against the other
+ * @param player - Number identifying the player (0 for player 1, 1 for player 2)
+ * @param probability - Probability that the attack will hit
+ * @param damage - Amount of damage to deal (10 for basic attack, 20 for special)
+ * @param yourCharacter - Reference to player 1's character
+ * @param enemyCharacter - Reference to player 2's character
+ * @returns Message indicating the result of the attack or an empty string if invalid
+ */
+
 export const attack = ( 
     player: number, 
     probability: number, 
@@ -15,26 +19,54 @@ export const attack = (
     yourCharacter: Ref<Character>, 
     enemyCharacter: Ref<Character>) => {
         if(!statusGame(yourCharacter, enemyCharacter)){
-          return;
+          return '';
         }
 
         if (!validateTurn(player, yourCharacter.value, enemyCharacter.value)) {
-          return;
+          return '';
+        }
+
+        if (!player && damage == 20) {
+          if(!limitSpecialAttack(yourCharacter.value)){
+            return `te quedaste sin ataques especiales juagador 1`
+          }
+        } else if (player && damage == 20){
+          if(!limitSpecialAttack(enemyCharacter.value)){
+            return `te quedaste sin ataques especiales juagador 2`
+          }
         }
 
         if (Math.floor((Math.random() * 10) + 1) > probability){
           if (!player){
             enemyCharacter.value.life -= damage;
+            damage == 20? yourCharacter.value.limit_special_attack -=1 : null;
             endTurn(player, yourCharacter, enemyCharacter)
+            return `jugador 1 acerto su ataque ${damage == 10? 'basico': 'especial'}`
           } else {
             yourCharacter.value.life -= damage;
-            endTurn(player, yourCharacter, enemyCharacter)
+            damage == 20? enemyCharacter.value.limit_special_attack -=1 : null;
+            endTurn(player, yourCharacter, enemyCharacter);
+            return `jugador 2 acerto su ataque ${damage == 10? 'basico': 'especial'}`
           }
         } else {
           endTurn(player, yourCharacter, enemyCharacter);
+          damage == 20 ? 
+                      !player? 
+                      yourCharacter.value.limit_special_attack -=1
+                      :
+                      enemyCharacter.value.limit_special_attack -=1
+          : null;  
+          return `jugador ${!player ? '1' : '2'} fallo su ataque ${damage == 10? 'basico': 'especial'}`
         }
 }; 
-
+/**
+ * Executes a healing action for the selected player
+ * @param player - Number identifying the player (0 for player 1, 1 for player 2)
+ * @param character - Character performing the healing
+ * @param yourCharacter - Reference to player 1's character
+ * @param enemyCharacter - Reference to player 2's character
+ * @returns Message indicating the result of the healing or an error message
+ */
 
 export const healing = (
     player: number, 
@@ -42,58 +74,71 @@ export const healing = (
     yourCharacter: Ref<Character>, 
     enemyCharacter: Ref<Character>) => {
         if (!statusGame(yourCharacter, enemyCharacter)){
-          return;
+          return '';
         }
 
         if (!validateTurn(player, yourCharacter.value, enemyCharacter.value)) {
-          return;
+          return '';
         }
 
         if (!validateCures(character)){
-          console.log('te quedaste sin curaciones');
-          return;
+          return `te quedaste sin curaciones jugador ${!player ? '1' : '2'}, haz otro movimiento`;
         }
 
         if (limitLife(character)){
-          console.log('salud al maximo');
-          return;
+          return `tienes la salud al maximo jugador ${!player ? '1' : '2'}, haz otro movimiento`;
         }
 
-        if (player == 0){
-          yourCharacter.value.life += 10
-          yourCharacter.value.limit_cures--
-          endTurn(player, yourCharacter, enemyCharacter)
+        if (!player){
+          yourCharacter.value.life += 10;
+          yourCharacter.value.limit_cures--;
+          endTurn(player, yourCharacter, enemyCharacter);
+          return `jugador 1 recupero 10 puntos de vida`;
         } else {
           enemyCharacter.value.life += 10;      
-          enemyCharacter.value.limit_cures--
-          endTurn(player, yourCharacter, enemyCharacter)
+          enemyCharacter.value.limit_cures--;
+          endTurn(player, yourCharacter, enemyCharacter);
+          return `jugador 2 recupero 10 puntos de vida`;
         }
 };
+
+/**
+ * Ends the current turn and switches to the next player
+ * @param player - Number identifying the current player (0 for player 1, 1 for player 2)
+ * @param yourCharacter - Reference to player 1's character
+ * @param enemyCharacter - Reference to player 2's character
+ */
 
 export const endTurn = (
     player: number, 
     yourCharacter: Ref<Character>, 
     enemyCharacter: Ref<Character>) => {
         if (!player) {
-          console.log('atack p1');
           yourCharacter.value.turn = false;
           enemyCharacter.value.turn = true;
         } else {
-          console.log('atack p2');
           enemyCharacter.value.turn = false;
           yourCharacter.value.turn = true;
         }
 };
 
+/**
+ * Resets the game to its initial values
+ * @param yourCharacter - Reference to player 1's character
+ * @param enemyCharacter - Reference to player 2's character
+ */
+
 export const restartGame = (    
   yourCharacter: Ref<Character>, 
   enemyCharacter: Ref<Character>) => {
     yourCharacter.value.life = 100;
-    yourCharacter.value.limit_cures = 5;
+    yourCharacter.value.limit_cures = 6;
     yourCharacter.value.turn = false;
+    yourCharacter.value.limit_special_attack = 4;
     enemyCharacter.value.life = 100;
-    enemyCharacter.value.limit_cures = 5;
+    enemyCharacter.value.limit_cures = 6;
     enemyCharacter.value.turn= false;
+    yourCharacter.value.limit_special_attack = 4;
 
     initGame(yourCharacter, enemyCharacter);
 }
