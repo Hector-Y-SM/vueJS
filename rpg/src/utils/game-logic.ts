@@ -1,5 +1,4 @@
 import type { Character } from "@/types/Character";
-import type { Ref } from 'vue';
 
 /**
  * Validates if it is the current player's turn
@@ -52,8 +51,8 @@ export const limitSpecialAttack = (character: Character) => {
  * @param yourCharacter - Reference to player 1's character
  * @param enemyCharacter - Reference to player 2's character
  */
-export const initGame= (yourCharacter: Ref<Character>, enemyCharacter: Ref<Character>) => {
-  Math.floor((Math.random() * 10) + 1) > 5? yourCharacter.value.turn = true : enemyCharacter.value.turn = true;
+export const initGame= (yourCharacter: Character, enemyCharacter: Character) => {
+  Math.floor((Math.random() * 10) + 1) > 5? yourCharacter.turn = true : enemyCharacter.turn = true;
 }
 
 /**
@@ -62,8 +61,8 @@ export const initGame= (yourCharacter: Ref<Character>, enemyCharacter: Ref<Chara
  * @param enemyCharacter - Reference to player 2's character
  * @returns true if the game should continue, false if a player has lost
  */
-export const statusGame = (yourCharacter: Ref<Character>, enemyCharacter: Ref<Character>) => {
-  if(yourCharacter.value.life <= 0 || enemyCharacter.value.life <= 0){
+export const statusGame = (yourCharacter: Character, enemyCharacter: Character) => {
+  if(yourCharacter.life <= 0 || enemyCharacter.life <= 0){
     return false;
   }
   return true;

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import { ref, type Ref } from 'vue';
+  import { ref} from 'vue';
   import type { Character } from './types/Character';
   import { defaultCharacter } from './types/Character';
   import { attack, healing, restartGame } from './utils/game-actions';
@@ -14,20 +14,20 @@
     ...defaultCharacter
   });
 
-  initGame(yourCharacter, enemyCharacter); //select a player at random attack first
+  initGame(yourCharacter.value, enemyCharacter.value); //select a player at random attack first
 
   // wrapper functions for the template
   const performAttack = (player: number, probability: number, damage: number) => {
-    information.value = attack(player, probability, damage, yourCharacter, enemyCharacter);
+    information.value = attack(player, probability, damage, yourCharacter.value, enemyCharacter.value);
   };
 
   const performHealing = (player: number, character: Character) => {
-    information.value = healing(player, character, yourCharacter, enemyCharacter);
+    information.value = healing(player, character, yourCharacter.value, enemyCharacter.value);
   };
 
   const performRestart = () => {
     information.value = ''
-    restartGame(yourCharacter, enemyCharacter);
+    restartGame(yourCharacter.value, enemyCharacter.value);
   };
 </script>
 

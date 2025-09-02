@@ -1,7 +1,6 @@
 import { defaultCharacter, type Character } from '../types/Character.ts';
 import { validateTurn, validateCures, limitLife, initGame, statusGame, limitSpecialAttack } from './game-logic.ts';
-import type { Ref } from 'vue';
-  
+
 /**
  * Executes an attack from one player against the other
  * @param player - Number identifying the player (0 for player 1, 1 for player 2)
@@ -15,35 +14,35 @@ export const attack = (
     player: number, 
     probability: number, 
     damage: number,   
-    yourCharacter: Ref<Character>, 
-    enemyCharacter: Ref<Character>) => {
+    yourCharacter: Character, 
+    enemyCharacter: Character) => {
         if(!statusGame(yourCharacter, enemyCharacter)){
           return '';
         }
 
-        if (!validateTurn(player, yourCharacter.value, enemyCharacter.value)) {
+        if (!validateTurn(player, yourCharacter, enemyCharacter)) {
           return '';
         }
 
         if (!player && damage == 20) {
-          if(!limitSpecialAttack(yourCharacter.value)){
+          if(!limitSpecialAttack(yourCharacter)){
             return `You have no special attacks left, player 1`
           }
         } else if (player && damage == 20){
-          if(!limitSpecialAttack(enemyCharacter.value)){
+          if(!limitSpecialAttack(enemyCharacter)){
             return `You have no special attacks left, player 2`
           }
         }
 
         if (Math.floor((Math.random() * 10) + 1) > probability){
           if (!player){
-            enemyCharacter.value.life -= damage;
-            damage == 20? yourCharacter.value.limit_special_attack -=1 : null;
+            enemyCharacter.life -= damage;
+            damage == 20? yourCharacter.limit_special_attack -=1 : null;
             endTurn(player, yourCharacter, enemyCharacter)
             return `Player 1 landed their ${damage == 10? 'basic': 'special'} attack`
           } else {
-            yourCharacter.value.life -= damage;
-            damage == 20? enemyCharacter.value.limit_special_attack -=1 : null;
+            yourCharacter.life -= damage;
+            damage == 20? enemyCharacter.limit_special_attack -=1 : null;
             endTurn(player, yourCharacter, enemyCharacter);
             return `Player 2 landed their ${damage == 10? 'basic': 'special'} attack`
           }
@@ -51,9 +50,9 @@ export const attack = (
           endTurn(player, yourCharacter, enemyCharacter);
           damage == 20 ? 
                       !player? 
-                      yourCharacter.value.limit_special_attack -=1
+                      yourCharacter.limit_special_attack -=1
                       :
-                      enemyCharacter.value.limit_special_attack -=1
+                      enemyCharacter.limit_special_attack -=1
           : null;  
           return `Player ${!player ? '1' : '2'} missed her ${damage == 10? 'basic': 'special'} attack`
         }
@@ -69,13 +68,13 @@ export const attack = (
 export const healing = (
     player: number, 
     character: Character, 
-    yourCharacter: Ref<Character>, 
-    enemyCharacter: Ref<Character>) => {
+    yourCharacter: Character, 
+    enemyCharacter: Character) => {
         if (!statusGame(yourCharacter, enemyCharacter)){
           return '';
         }
 
-        if (!validateTurn(player, yourCharacter.value, enemyCharacter.value)) {
+        if (!validateTurn(player, yourCharacter, enemyCharacter)) {
           return '';
         }
 
@@ -88,13 +87,13 @@ export const healing = (
         }
 
         if (!player){
-          yourCharacter.value.life += 10;
-          yourCharacter.value.limit_cures--;
+          yourCharacter.life += 10;
+          yourCharacter.limit_cures--;
           endTurn(player, yourCharacter, enemyCharacter);
           return `Player 1 regained 10 health points.`;
         } else {
-          enemyCharacter.value.life += 10;      
-          enemyCharacter.value.limit_cures--;
+          enemyCharacter.life += 10;      
+          enemyCharacter.limit_cures--;
           endTurn(player, yourCharacter, enemyCharacter);
           return `Player 2 regained 10 health points.`;
         }
@@ -108,14 +107,14 @@ export const healing = (
  */
 export const endTurn = (
     player: number, 
-    yourCharacter: Ref<Character>, 
-    enemyCharacter: Ref<Character>) => {
+    yourCharacter: Character, 
+    enemyCharacter: Character) => {
         if (!player) {
-          yourCharacter.value.turn = false;
-          enemyCharacter.value.turn = true;
+          yourCharacter.turn = false;
+          enemyCharacter.turn = true;
         } else {
-          enemyCharacter.value.turn = false;
-          yourCharacter.value.turn = true;
+          enemyCharacter.turn = false;
+          yourCharacter.turn = true;
         }
 };
 
@@ -125,10 +124,10 @@ export const endTurn = (
  * @param enemyCharacter - Reference to player 2's character
  */
 export const restartGame = (    
-  yourCharacter: Ref<Character>, 
-  enemyCharacter: Ref<Character>) => {
-    Object.assign(yourCharacter.value, defaultCharacter);
-    Object.assign(enemyCharacter.value, defaultCharacter);
+  yourCharacter: Character, 
+  enemyCharacter: Character) => {
+    Object.assign(yourCharacter, defaultCharacter);
+    Object.assign(enemyCharacter, defaultCharacter);
 
     initGame(yourCharacter, enemyCharacter);
 }
