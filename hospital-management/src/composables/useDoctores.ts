@@ -1,6 +1,7 @@
 import { doctores } from "@/data/doctores";
+import type { Doctor } from "@/types";
 
-function doctorMasExp(especialidad: string){
+function doctorMasExp(especialidad: string): Doctor | string{
   const especialidadDoctores = doctores.filter(doctor => doctor.especialidad === especialidad);
   if(especialidadDoctores.length == 0){
     return 'no se encontro ningun doctor con esta especialidad'
@@ -8,6 +9,7 @@ function doctorMasExp(especialidad: string){
   const mayorExp = especialidadDoctores.reduce((doctorMax, doctorActual) => 
     doctorActual.experiencia > doctorMax.experiencia ? doctorActual : doctorMax
   );
+
   return mayorExp;
 }
 

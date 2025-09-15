@@ -1,9 +1,12 @@
-import { doctores } from "@/data/doctores";
-import { pacientes } from "@/data/pacientes";
-import type { Cita, Doctor, Paciente } from "@/types";
 import { ref } from "vue";
+import { doctores as doctoresData } from "@/data/doctores";
+import { pacientes as pacientesData } from "@/data/pacientes";
+import type { Cita, Doctor, Paciente } from "@/types";
 
 let proximaIdcita = ref(1);
+const doctores = ref<Doctor[]>([...doctoresData]);
+const pacientes = ref<Paciente[]>([...pacientesData]);
+
 
 function ordenarPacientes(p: Paciente) {
   if (p.edad >= 60 && p.prioridad == "alta"){
@@ -17,7 +20,7 @@ function ordenarPacientes(p: Paciente) {
 
 function asignarDoctores(p: Paciente){
   const esCritico = ordenarPacientes(p) == 2;
-  const doctorDisponible = doctores.filter( d =>
+  const doctorDisponible = doctores.value.filter( d =>
     d.disponibilidad != "ausente" && d.especialidad === p.especialidadRequerida
   );
 
@@ -38,7 +41,7 @@ function asignarDoctores(p: Paciente){
       pacienteId: p.id,
       doctorId:doctorAsignado.id,
       fecha: new Date(),
-      hora:`${10 + doctorAsignado.citas.length}:00`,
+      hora:`${9 + (doctorAsignado.citas.length + 1)}:00`,
       estado: "pendiente"
   }
 
@@ -47,7 +50,7 @@ function asignarDoctores(p: Paciente){
 }
 
 function siguientePaciente(idDoctor: number){
-  const doctor = doctores.find(d => d.id === idDoctor);
+  const doctor = doctores.value.find(d => d.id === idDoctor);
   if(!doctor) return;
   if (doctor.enConsulta) {
     console.log(`${doctor.nombre} ya está atendiendo a ${doctor.enConsulta.nombre}`);
@@ -59,7 +62,7 @@ function siguientePaciente(idDoctor: number){
     console.log(`${doctor.nombre} no tiene mas citas pendientes hoy`);
   }
   
-  const paciente = pacientes.find(p => p.id == proximaCita?.pacienteId);
+  const paciente = pacientes.value.find(p => p.id == proximaCita?.pacienteId);
   if(paciente){
     doctor.disponibilidad = "ocupado";
     doctor.enConsulta = paciente;
@@ -68,7 +71,7 @@ function siguientePaciente(idDoctor: number){
 }
 
 function terminarConsulta(idDoctor: number){
-    const doctor = doctores.find(d => d.id === idDoctor);
+    const doctor = doctores.value.find(d => d.id === idDoctor);
     if(!doctor || doctor.enConsulta == null) return "doctor no disponible";
 
     const citaAcutal = doctor.citas.find(cita => cita.pacienteId === doctor.enConsulta?.id && cita.estado === "en proceso");
@@ -83,12 +86,11 @@ function terminarConsulta(idDoctor: number){
 }
 
 const createCitas = () => {
-  //primero ordenarPacientes los pacientes por urgencia (alta prioriodad + edad >= 60 seran criticos)
-  pacientes.sort((a, b) => {
+  pacientes.value.sort((a, b) => {
     return ordenarPacientes(b) - ordenarPacientes(a)
   });
 
-  pacientes.forEach(paciente => {
+  pacientes.value.forEach(paciente => {
   if (!paciente.consultado) {
       asignarDoctores(paciente);
     }
