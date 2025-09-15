@@ -1,33 +1,63 @@
-# rpg
+# 🏥 Hospital Management System
 
-This template should help get you started developing with Vue 3 in Vite.
+A Vue 3 + TypeScript application for optimizing hospital resource management and patient care.
 
-## Recommended IDE Setup
+## 🎯 Project Overview
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
+This system helps hospitals optimize doctor assignments, prioritize critical cases, and generate workload reports using modern JavaScript array methods.
 
-## Type Support for `.vue` Imports in TS
+### Key Features
 
-TypeScript cannot handle type information for `.vue` imports by default, so we replace the `tsc` CLI with `vue-tsc` for type checking. In editors, we need [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) to make the TypeScript language service aware of `.vue` types.
+- 👨‍⚕️ Automatic doctor-patient assignment based on specialty and availability
+- 🚨 Patient prioritization system (urgency level + age criteria)
+- 📊 Specialty-based workload reporting
+- 👑 Experience-based doctor ranking by specialty
+- ⏱️ Average waiting time calculations per specialty
 
-## Customize configuration
+### Technical Implementation
 
-See [Vite Configuration Reference](https://vite.dev/config/).
+The system leverages the following array methods:
+- `filter()` - For filtering specific criteria
+- `reduce()` - For data aggregation
+- `sort()` - For priority and ranking implementations
 
-## Project Setup
+## 💻 Development Setup
+
+### Prerequisites
+
+- Node.js (Latest LTS version recommended)
+- npm or yarn package manager
+
+### Recommended IDE Setup
+
+[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur)
+
+### Project Setup
 
 ```sh
 npm install
 ```
 
-### Compile and Hot-Reload for Development
+### Development Server
 
 ```sh
 npm run dev
 ```
 
-### Type-Check, Compile and Minify for Production
+### Production Build
 
 ```sh
 npm run build
 ```
+
+## 🔧 Type Support
+
+This project uses TypeScript with Vue 3. For proper `.vue` file support:
+- Use [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) extension
+- TypeScript configuration is handled through `vue-tsc`
+
+## 📚 Additional Configuration
+
+For detailed configuration options, see:
+- [Vite Configuration Reference](https://vitejs.dev/config/)
+- [Vue 3 Documentation](https://v3.vuejs.org/)
