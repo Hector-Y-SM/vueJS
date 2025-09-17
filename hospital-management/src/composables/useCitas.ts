@@ -18,14 +18,16 @@ function ordenarPacientes(p: Paciente) {
   return 0;
 }
 
+
 function asignarDoctores(p: Paciente){
   const esCritico = ordenarPacientes(p) == 2;
+  doctores.value.sort((a,b)=> b.experiencia - a.experiencia);
+
   const doctorDisponible = doctores.value.filter( d =>
     d.disponibilidad != "ausente" && d.especialidad === p.especialidadRequerida
   );
 
   if(!doctorDisponible){
-    console.log('no hay ningyn disponible para esta especialidad');
     return;
   }
   
@@ -46,20 +48,18 @@ function asignarDoctores(p: Paciente){
   }
 
   doctorAsignado.citas.push(nuevaCita);
-  console.log(`${p.nombre} se le asigno cita con ${doctorAsignado.nombre}`);
 }
 
 function siguientePaciente(idDoctor: number){
   const doctor = doctores.value.find(d => d.id === idDoctor);
   if(!doctor) return;
   if (doctor.enConsulta) {
-    console.log(`${doctor.nombre} ya está atendiendo a ${doctor.enConsulta.nombre}`);
     return;
   }
   
   const proximaCita = doctor.citas.find(i => i.estado == "pendiente")
   if(!proximaCita){
-    console.log(`${doctor.nombre} no tiene mas citas pendientes hoy`);
+    return
   }
   
   const paciente = pacientes.value.find(p => p.id == proximaCita?.pacienteId);
@@ -82,7 +82,6 @@ function terminarConsulta(idDoctor: number){
     doctor.enConsulta.consultado = true;
     doctor.enConsulta = null;
     doctor.disponibilidad = "disponible";
-    console.log(`${doctor.nombre} termino su cita`);
 }
 
 const createCitas = () => {

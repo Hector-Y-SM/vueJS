@@ -19,10 +19,10 @@ function reporteCarga(especialidad: string){
     return 'no se encontro ningun doctor con esta especialidad'
   }
   const totalCitas = especialidadDoctores.reduce((sum, doctor) => sum + doctor.citas.length, 0);
-  return {
+  return [{
     numeroCitas: totalCitas,
     citas: especialidadDoctores
-  }
+  }]
 }
 
 export function useDoctor(){

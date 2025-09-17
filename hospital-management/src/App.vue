@@ -1,7 +1,8 @@
 <script setup lang="ts">
+  import { ref } from 'vue';
   import { useCitas } from './composables/useCitas'
   import { useDoctor } from './composables/useDoctores';
-import type { Doctor } from './types';
+  import type { Doctor } from './types';
 
   const {
       doctores,
@@ -9,15 +10,28 @@ import type { Doctor } from './types';
       createCitas,
       siguientePaciente,
       terminarConsulta
-    } = useCitas();
+  } = useCitas();
 
   const {
     reporteCarga,
     doctorMasExp
   } = useDoctor();
 
+  const reporteVisible = ref<string | null>(null);
+  const reporteDatos = ref<any>(null);
+  function abrirReporte(especialidad: string) {
+    const result = reporteCarga(especialidad);
+    if (Array.isArray(result)) {
+      reporteDatos.value = result[0];
+      reporteVisible.value = especialidad;
+    } else {
+      reporteDatos.value = null;
+      reporteVisible.value = null;
+      alert(result);
+    }
+  };
 
-    createCitas()
+  createCitas();
 </script>
 
 <template>
@@ -33,12 +47,20 @@ import type { Doctor } from './types';
       <div
         v-for="doctor in doctores"
         :key="doctor.id"
-        class="flex items-start gap-6"
+        class="flex items-start gap-6 relative"
       >
         <!-- Card doctor -->
         <div
-          class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 shadow-sm flex flex-col gap-2 w-64"
+          class="bg-emerald-50 border border-emerald-200 rounded-xl p-5 shadow-sm flex flex-col gap-2 w-64 relative"
         >
+          <!-- Botón de reporte -->
+          <button
+            @click="abrirReporte(doctor.especialidad)"
+            class="absolute top-2 right-2 text-emerald-700 hover:text-emerald-900"
+          >
+            🛈
+          </button>
+
           <h2 class="text-lg font-semibold text-emerald-900">
             {{ doctor.nombre }}
           </h2>
@@ -57,10 +79,13 @@ import type { Doctor } from './types';
             }"
           >
             {{ doctor.disponibilidad }}
-            {{ 
-              doctor.disponibilidad == 'ocupado' 
-                ? `hasta: ${doctor.citas.filter(cita => cita.estado === 'en proceso')[0]?.hora || 'N/A'}` 
-                : '' 
+            {{
+              doctor.disponibilidad == "ocupado"
+                ? `hasta: ${
+                    doctor.citas.filter(cita => cita.estado === "en proceso")[0]
+                      ?.hora || "N/A"
+                  }`
+                : ""
             }}
           </h3>
 
@@ -131,16 +156,49 @@ import type { Doctor } from './types';
               </p>
             </div>
           </template>
-
-
-          <p
-            v-else
-            class="text-stone-500 italic text-sm"
-          >
+          <p v-else class="text-stone-500 italic text-sm">
             No tiene más citas hoy
           </p>
         </div>
       </div>
     </section>
+
+    <!-- Panel flotante del reporte -->
+    <div
+      v-if="reporteVisible"
+      class="fixed inset-0 backdrop-blur-sm bg-black/20 flex items-center justify-center z-50"
+    >
+      <div class="bg-white rounded-xl shadow-lg p-6 w-[400px] relative">
+        <button
+          @click="reporteVisible = null"
+          class="absolute top-2 right-2 text-stone-500 hover:text-stone-700"
+        >
+          ✖
+        </button>
+      
+        <h2 class="text-lg font-semibold text-stone-800 mb-4">
+          Reporte de carga: {{ reporteVisible }}
+        </h2>
+      
+        <div v-if="reporteDatos">
+          <p class="mb-2">
+            <strong>Total de citas:</strong>
+            {{ reporteDatos.numeroCitas }}
+          </p>
+        
+          <div v-for="doc in reporteDatos.citas" :key="doc.id" class="mb-4">
+            <h3 class="font-medium text-emerald-700">
+              {{ doc.nombre }} ({{ doc.especialidad }})
+            </h3>
+            <ul class="text-sm list-disc pl-4 text-stone-700">
+              <li v-for="cita in doc.citas" :key="cita.id">
+                Paciente: {{ pacientes.find(p => p.id === cita.pacienteId)?.nombre }}
+                - Estado: {{ cita.estado }}
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
