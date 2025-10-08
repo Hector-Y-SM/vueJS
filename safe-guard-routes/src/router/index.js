@@ -1,19 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
-import Home from '../views/Home.vue'
-import Login from '../views/Login.vue'
-import PostList from '../views/PostList.vue'
 import PostDetail from '../views/PostDetail.vue'
-import Dashboard from '../views/Dashboard.vue'
 import NotFound from '../views/NotFound.vue'
 import UserProfile from '@/views/UserProfile.vue'
+import { supabase } from '@/supabase'
 
 const routes = [
   {
     path: '/login',
     name: 'Login',
     component: () => import('../views/Login.vue'),
-    meta: { requiresAuth: false }
   },
   {
     path: '/',
@@ -49,9 +44,8 @@ const routes = [
   {
     path: '/dashboard',
     name: 'dashboard',
-    component: Dashboard,
-    // Guard: Solo administradores
-    meta: { requiresAuth: true, requiresAdmin: true }
+    component: () => import('../views/Dashboard.vue'),
+    meta: { requiresAuth: true }
   },
   {
     path: '/profile',
@@ -74,29 +68,16 @@ const router = createRouter({
 
 // Navigation Guard
 router.beforeEach(async (to, from, next) => {
-  const authStore = useAuthStore()
+  const { data: { user } } = await supabase.auth.getUser()
 
-  // Verificar autenticación al iniciar
-  if (!authStore.isAuthenticated) {
-    await authStore.checkAuth()
-  }
-
-  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
-  const requiresRole = to.meta.requiresRole
-
-  if (requiresAuth && !authStore.isAuthenticated) {
-    // Guardar la ruta a la que intentaba acceder
-    next({
-      name: 'Login',
-      query: { redirect: to.fullPath }
-    })
-  } else if (requiresRole && !requiresRole.includes(authStore.userRole)) {
-    // Usuario no tiene el rol necesario
-    next({ name: 'Home' })
-  } else if (to.name === 'Login' && authStore.isAuthenticated) {
-    // Si ya está autenticado y va a login, redirigir a home
-    next({ name: 'Home' })
+  if (to.meta.requiresAuth && !user) {
+    console.log('aqui');
+    next('/login')
+  } else if (to.path === '/login' && user) {
+    console.log('noo');
+    next('/dashboard')
   } else {
+    console.log('???');
     next()
   }
 })
