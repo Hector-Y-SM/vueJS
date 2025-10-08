@@ -23,7 +23,6 @@ import { useRouter } from 'vue-router'
 import { onMounted, ref } from 'vue'
 
 const { user, signOut } = useAuth()
-const currentUser = ref(null)
 const router = useRouter()
 
 const handleLogout = async () => {

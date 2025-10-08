@@ -54,7 +54,6 @@ const handleLogin = async () => {
   isLoading.value = true
   
   const { data, error: loginError } = await signIn(email.value, password.value)
-  
   isLoading.value = false
   
   if (loginError) {

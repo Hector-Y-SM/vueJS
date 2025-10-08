@@ -1,7 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import PostDetail from '../views/PostDetail.vue'
 import NotFound from '../views/NotFound.vue'
-import UserProfile from '@/views/UserProfile.vue'
+import UserProfile from '@/views/Profile.vue'
 import { supabase } from '@/supabase'
 
 const routes = [
@@ -49,9 +49,18 @@ const routes = [
   },
   {
     path: '/profile',
-    name: 'user-profile',
-    component: UserProfile,
-    meta: { requiresAuth: true }
+    name: 'Profile',
+    component: () => import('../views/Profile.vue'),
+    meta: { requiresAuth: true },
+
+    //ruta anidada
+    children: [{
+      path: 'settings',
+      name: 'ProfileSettings',
+      component: () => import('../views/ProfileSettings.vue'),
+      meta: { requiresAuth: true },
+
+    }]
   },
   {
     // Ruta catch-all para 404

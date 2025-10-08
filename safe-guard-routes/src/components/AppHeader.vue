@@ -3,10 +3,13 @@
     <div class="header-content">
       <h1>Mi Aplicación</h1>
       <div class="user-info">
-        <span class="user-name">{{ user.email }}</span>
+        <router-link to="/profile">
+          <span class="user-name">{{ user.email }}</span>
+        </router-link>
         <span class="user-role" :class="`role-admin`">
           {{ roleLabel }}
         </span>
+
         <button @click="handleLogout" class="logout-button">
           Cerrar Sesión
         </button>
