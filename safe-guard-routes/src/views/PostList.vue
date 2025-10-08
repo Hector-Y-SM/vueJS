@@ -37,6 +37,7 @@
         Leer más
       </router-link>
     </div>
+    <button @click="()=> router.push('/')">Inicio</button>
   </div>
 </template>
 

@@ -1,10 +1,10 @@
 <template>
-  <header class="app-header">
+  <header v-if="user" class="app-header">
     <div class="header-content">
       <h1>Mi Aplicación</h1>
-      <div v-if="authStore.isAuthenticated" class="user-info">
-        <span class="user-name">{{ authStore.userName }}</span>
-        <span class="user-role" :class="`role-${authStore.userRole}`">
+      <div class="user-info">
+        <span class="user-name">{{ user.email }}</span>
+        <span class="user-role" :class="`role-admin`">
           {{ roleLabel }}
         </span>
         <button @click="handleLogout" class="logout-button">
@@ -18,10 +18,10 @@
 <script setup>
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
-import { useAuthStore } from '../stores/auth'
+import { useAuth } from '@/services/useAuth'
 
+const { user, signOut } = useAuth()
 const router = useRouter()
-const authStore = useAuthStore()
 
 const roleLabel = computed(() => {
   const roles = {
@@ -29,13 +29,18 @@ const roleLabel = computed(() => {
     user: 'Usuario',
     moderator: 'Moderador'
   }
-  return roles[authStore.userRole] || authStore.userRole
+
+  return 'Moderador' //añadirles roles a la db
 })
 
 const handleLogout = async () => {
-  await authStore.logout()
-  router.push('/login')
+    const {data, err} = await signOut();
+  if(!err){
+    router.push('/')
+  }
 }
+
+
 </script>
 
 <style scoped>

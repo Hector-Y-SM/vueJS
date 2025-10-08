@@ -1,6 +1,6 @@
 <template>
   <div id="app">
-    <AppHeader v-if="authStore.isAuthenticated" />
+    <AppHeader  v-if="currentUser" />
     <main>
       <RouterView />
     </main>
@@ -8,14 +8,16 @@
 </template>
 
 <script setup>
-import { onMounted } from 'vue'
-import { useAuthStore } from './stores/auth'
+import { onMounted, ref } from 'vue'
 import AppHeader from './components/AppHeader.vue'
+import { useAuth } from './services/useAuth'
 
-const authStore = useAuthStore()
 
-onMounted(async () => {
-  await authStore.checkAuth()
+const { getUser } = useAuth();
+const currentUser = ref(null)
+
+onMounted( async () => {
+  currentUser.value = await getUser();
 })
 </script>
 
