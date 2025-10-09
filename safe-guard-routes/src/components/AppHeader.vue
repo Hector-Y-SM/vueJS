@@ -1,5 +1,5 @@
 <template>
-  <header v-if="user" class="app-header">
+  <header v-if="user && !isRestrictedRoute" class="app-header">
     <div class="header-content">
       <h1>Mi Aplicación</h1>
       <div class="user-info">
@@ -20,11 +20,21 @@
 
 <script setup>
 import { computed } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRouter, useRoute } from 'vue-router'
 import { useAuth } from '@/services/useAuth'
 
 const { user, signOut } = useAuth()
 const router = useRouter()
+const route = useRoute()
+
+const restrictedRoutes = [
+  '/forgot-password',
+  '/reset-password',
+]
+
+const isRestrictedRoute = computed(() => {
+  return restrictedRoutes.includes(route.path)
+})
 
 const roleLabel = computed(() => {
   const roles = {

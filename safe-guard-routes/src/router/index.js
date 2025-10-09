@@ -22,6 +22,24 @@ const routes = [
     component: () => import('../views/PostList.vue'),
     meta: { requiresAuth: true }
   },
+  {
+    path: '/signup',
+    name: 'SignUp',
+    component: () => import('../views/SignUp.vue'),
+    meta: { requiresAuth: false }
+  },
+  {
+    path: '/reset-password',
+    name:'resetPassword',
+    component: () => import('../views/ResetPassword.vue'),
+    meta: { requiresAuth: false }
+  },
+    {
+      path: '/forgot-password',
+      name: 'ForgotPassword',
+      component: () => import('../views/ForgotPassword.vue'),
+      meta: { requiresAuth: false }
+    },
   /*{
     path: '/admin',
     name: 'Admin',

@@ -6,11 +6,17 @@ export const useAuth = () => {
   const loading = ref(true)
 
   // Registrar usuario
-  const signUp = async (email, password) => {
+  const signUp = async (email, displayName, password) => {
     const { data, error } = await supabase.auth.signUp({
       email,
-      password
+      password,
+      options:{
+        data:{
+          display_name: displayName
+        }
+      }
     })
+    
     return { data, error }
   }
 
@@ -29,6 +35,7 @@ export const useAuth = () => {
     user.value = null
     return { error }
   }
+  
 
   // Obtener usuario actual
   const getUser = async () => {

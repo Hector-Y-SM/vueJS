@@ -21,6 +21,8 @@
         />
       </div>
       
+         
+      <router-link to="/forgot-password">recuperar Contraseña</router-link>
       <button type="submit" :disabled="isLoading">
         {{ isLoading ? 'Cargando...' : 'Iniciar Sesión' }}
       </button>
