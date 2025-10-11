@@ -1,43 +1,42 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import PostDetail from '../views/PostDetail.vue'
+import PostDetail from '../views/posts/PostDetail.vue'
 import NotFound from '../views/NotFound.vue'
-import UserProfile from '@/views/Profile.vue'
-import { supabase } from '@/supabase'
+import { supabase } from '@/lib/supabase'
 
 const routes = [
   {
     path: '/login',
     name: 'Login',
-    component: () => import('../views/Login.vue'),
+    component: () => import('../views/auth/Login.vue'),
   },
   {
     path: '/',
     name: 'Home',
-    component: () => import('../views/Home.vue'),
+    component: () => import('../views/user/Home.vue'),
     meta: { requiresAuth: true }
   },
   {
     path: '/posts',
     name: 'Posts',
-    component: () => import('../views/PostList.vue'),
+    component: () => import('../views/posts/PostList.vue'),
     meta: { requiresAuth: true }
   },
   {
     path: '/signup',
     name: 'SignUp',
-    component: () => import('../views/SignUp.vue'),
+    component: () => import('../views/auth/SignUp.vue'),
     meta: { requiresAuth: false }
   },
   {
     path: '/reset-password',
     name:'resetPassword',
-    component: () => import('../views/ResetPassword.vue'),
-    meta: { requiresAuth: false }
+    component: () => import('../views/auth/ResetPassword.vue'),
+    meta: { requiresAuth: true }
   },
     {
       path: '/forgot-password',
       name: 'ForgotPassword',
-      component: () => import('../views/ForgotPassword.vue'),
+      component: () => import('../views/auth/ForgotPassword.vue'),
       meta: { requiresAuth: false }
     },
   /*{
@@ -62,20 +61,20 @@ const routes = [
   {
     path: '/dashboard',
     name: 'dashboard',
-    component: () => import('../views/Dashboard.vue'),
+    component: () => import('../views/user/Dashboard.vue'),
     meta: { requiresAuth: true }
   },
   {
     path: '/profile',
     name: 'Profile',
-    component: () => import('../views/Profile.vue'),
+    component: () => import('../views/user/Profile.vue'),
     meta: { requiresAuth: true },
 
     //ruta anidada
     children: [{
       path: 'settings',
       name: 'ProfileSettings',
-      component: () => import('../views/ProfileSettings.vue'),
+      component: () => import('../views/user/ProfileSettings.vue'),
       meta: { requiresAuth: true },
 
     }]
@@ -102,7 +101,7 @@ router.beforeEach(async (to, from, next) => {
     next('/login')
   } else if (to.path === '/login' && user) {
     console.log('noo');
-    next('/dashboard')
+    next('/')
   } else {
     console.log('???');
     next()

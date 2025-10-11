@@ -52,7 +52,7 @@
 
 <script setup>
 import { ref } from 'vue'
-import { supabase } from '../supabase.js'
+import { supabase } from '../../lib/supabase.js'
 
 const email = ref('')
 const loading = ref(false)

@@ -1,5 +1,5 @@
 import { ref, onMounted } from 'vue'
-import { supabase } from '@/supabase'
+import { supabase } from '@/lib/supabase'
 
 export const useAuth = () => {
   const user = ref(null)
@@ -8,11 +8,11 @@ export const useAuth = () => {
   // Registrar usuario
   const signUp = async (email, displayName, password) => {
     const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options:{
-        data:{
-          display_name: displayName
+      email: email,
+      password: password,
+      options: {
+        data: {
+          first_name: displayName
         }
       }
     })

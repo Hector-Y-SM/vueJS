@@ -58,7 +58,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
-import { supabase } from '../supabase.js'
+import { supabase } from '../../lib/supabase.js'
 import { useAuth } from '@/services/useAuth.js'
 
 

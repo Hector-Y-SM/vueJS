@@ -30,6 +30,7 @@ const route = useRoute()
 const restrictedRoutes = [
   '/forgot-password',
   '/reset-password',
+  '/login'
 ]
 
 const isRestrictedRoute = computed(() => {
